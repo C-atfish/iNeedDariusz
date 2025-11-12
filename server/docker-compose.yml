@@ -1,0 +1,15 @@
+version: "3.1"
+name: i-need-dariusz
+services:
+  backend:
+    container_name: "ineed-backend"
+    build: .
+    env_file:
+      - .env
+    ports:
+      - "4512:3001"
+  frontend:
+    container_name: "ineed-frontend"
+    build: ../i-need-dariusz-client
+    ports:
+      - "4561:80"

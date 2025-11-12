@@ -1,0 +1,7 @@
+node_modules;
+dist;
+build.cache.next;
+out.git.gitignore.DS_Store;
+coverage;
+npm - debug.log * yarn.lock;
+pnpm - lock.yaml.env.local.env.development.env.test.vscode;
