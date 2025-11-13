@@ -7,6 +7,7 @@ import type { Profile } from "passport-google-oauth20";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import { UserDB } from "./db/User";
+import { QueueRouter } from "./routes/Queue";
 
 dotenv.config();
 
@@ -34,6 +35,8 @@ app.use(
   })
 );
 app.use(passport.initialize());
+
+app.use("/api/queue", QueueRouter);
 
 type User = { id: string; email?: string; name?: string; picture?: string };
 const users = new Map<string, User>();

@@ -4,7 +4,10 @@ import { computed, onBeforeUnmount, onMounted, reactive, ref } from "vue";
 type Status = "queued" | "active" | "done";
 type QueueItem = {
   id: string;
-  name: string;
+  user: {
+    name: string;
+    email: string;
+  };
   queuedAt: Date;
   status: Status;
   startedAt?: Date;
@@ -19,25 +22,37 @@ let timer: number | undefined;
 const items = reactive<QueueItem[]>([
   {
     id: "u1",
-    name: "Dariusz K.",
+    user: {
+      name: "Dariusz K.",
+      email: "dariusz@example.com",
+    },
     queuedAt: new Date(Date.now() - 11 * 60_000),
     status: "queued",
   },
   {
     id: "u2",
-    name: "Maya S.",
+    user: {
+      name: "Maya S.",
+      email: "maya@example.com",
+    },
     queuedAt: new Date(Date.now() - 8 * 60_000),
     status: "queued",
   },
   {
     id: "u3",
-    name: "Jonar L.",
+    user: {
+      name: "Jonar L.",
+      email: "jonar@example.com",
+    },
     queuedAt: new Date(Date.now() - 4 * 60_000),
     status: "queued",
   },
   {
     id: "u4",
-    name: "Alex R.",
+    user: {
+      name: "Alex R.",
+      email: "alex@example.com",
+    },
     queuedAt: new Date(Date.now() - 2 * 60_000),
     status: "queued",
   },
@@ -168,11 +183,11 @@ function hhmm(d: Date) {
               <v-card-title class="d-flex align-center">
                 <v-avatar color="secondary" class="mr-3">
                   <span class="text-white">{{
-                    it.name.charAt(0).toUpperCase()
+                    it.user.name.charAt(0).toUpperCase()
                   }}</span>
                 </v-avatar>
                 <div>
-                  <div class="font-weight-medium">{{ it.name }}</div>
+                  <div class="font-weight-medium">{{ it.user.name }}</div>
                   <div class="text-caption text-medium-emphasis">
                     Started at {{ it.startedAt ? hhmm(it.startedAt) : "-" }}
                   </div>
@@ -226,13 +241,13 @@ function hhmm(d: Date) {
           <template #prepend>
             <v-avatar color="primary" class="elevation-1">
               <span class="text-white">{{
-                it.name.charAt(0).toUpperCase()
+                it.user.name.charAt(0).toUpperCase()
               }}</span>
             </v-avatar>
           </template>
 
           <v-list-item-title class="font-weight-medium">
-            {{ it.name }}
+            {{ it.user.name }}
           </v-list-item-title>
 
           <v-list-item-subtitle>

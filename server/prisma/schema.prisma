@@ -3,7 +3,12 @@
 
 // Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
+enum QueueItemStatus {
+  queued
+  meeting
+  deleted
+  completed
+}
 generator client {
   provider = "prisma-client"
   output   = "../generated/prisma"
@@ -26,4 +31,6 @@ model QueueItem {
   id Int @id @default(autoincrement())
   user User @relation(fields: [userId], references: [id])
   userId Int
+  queuedAt DateTime @default(now())
+  status QueueItemStatus @default(queued)
 }

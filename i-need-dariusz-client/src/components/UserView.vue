@@ -1,35 +1,27 @@
 <script setup lang="ts">
-import { computed, onMounted, onBeforeUnmount, ref } from "vue";
+import { computed, onMounted, onBeforeUnmount, ref, reactive } from "vue";
 
-type QueueEntry = {
+type QueueItem = {
   id: string;
-  name: string;
+  user: {
+    name: string;
+    email: string;
+  };
   queuedAt: Date;
-  email?: string;
+  status: string;
+  startedAt?: Date;
+  endsAt?: Date;
 };
 
-// 👉 mock data
-const mockQueue = ref<QueueEntry[]>([
-  {
-    id: "u1",
-    name: "Dariusz K.",
-    queuedAt: new Date(Date.now() - 1000 * 60 * 11),
-    email: "dariusz@example.com",
-  },
-  { id: "u2", name: "Maya S.", queuedAt: new Date(Date.now() - 1000 * 60 * 8) },
-  {
-    id: "u3",
-    name: "Jonar L.",
-    queuedAt: new Date(Date.now() - 1000 * 60 * 4),
-    email: "you@example.com",
-  }, // you
-  { id: "u4", name: "Alex R.", queuedAt: new Date(Date.now() - 1000 * 60 * 2) },
-]);
+async function fetchQueue() {
+  const res = await fetch(`${import.meta.env.VITE_API_BASE}/api/queue/waiting`);
+  return res.json();
+}
 
-// pretend we know who the current user is
+const queue = ref<QueueItem[]>([]);
+
 const currentUserEmail = "you@example.com";
 
-// keep a ticking ref to refresh "time ago"
 const now = ref(Date.now());
 let timer: number | undefined;
 onMounted(() => {
@@ -39,15 +31,8 @@ onBeforeUnmount(() => {
   if (timer) clearInterval(timer);
 });
 
-// position is simply index in FIFO by queuedAt
-const queue = computed(() =>
-  [...mockQueue.value]
-    .sort((a, b) => a.queuedAt.getTime() - b.queuedAt.getTime())
-    .map((entry, i) => ({ ...entry, position: i + 1 }))
-);
-
 const myEntry = computed(
-  () => queue.value.find((q) => q.email === currentUserEmail) || null
+  () => queue.value.find((q) => q.user.email === currentUserEmail) || null
 );
 
 function timeAgo(d: Date) {
@@ -65,6 +50,18 @@ function hhmm(d: Date) {
   const m = d.getMinutes().toString().padStart(2, "0");
   return `${h}:${m}`;
 }
+
+onMounted(async () => {
+  const raw = await fetchQueue();
+
+  queue.value = raw.map((item: any) => ({
+    ...item,
+
+    queuedAt: new Date(item.queuedAt),
+    startedAt: item.startedAt ? new Date(item.startedAt) : undefined,
+    endsAt: item.endsAt ? new Date(item.endsAt) : undefined,
+  }));
+});
 </script>
 
 <template>
@@ -99,8 +96,7 @@ function hhmm(d: Date) {
       <div class="d-flex align-center justify-space-between flex-wrap">
         <div class="mr-4">
           <div class="text-subtitle-1 font-weight-medium">
-            You are <span class="text-primary">#{{ myEntry.position }}</span> in
-            the queue
+            You are <span class="text-primary">#111</span> in the queue
           </div>
           <div class="text-body-2 text-medium-emphasis">
             Queued at {{ hhmm(myEntry.queuedAt) }} ({{
@@ -109,26 +105,26 @@ function hhmm(d: Date) {
           </div>
         </div>
         <v-chip color="primary" variant="elevated" size="large" class="my-2">
-          Position #{{ myEntry.position }}
+          Position #111
         </v-chip>
       </div>
     </v-alert>
 
     <!-- queue list -->
     <v-list lines="two" class="py-0">
-      <v-list-item v-for="item in queue" :key="item.id" class="px-4">
+      <v-list-item v-for="(item, index) in queue" :key="item.id" class="px-4">
         <template #prepend>
           <v-avatar color="primary" class="elevation-1">
             <span class="text-white">{{
-              item.name.charAt(0).toUpperCase()
+              item.user.name.charAt(0).toUpperCase()
             }}</span>
           </v-avatar>
         </template>
 
         <v-list-item-title class="font-weight-medium">
-          {{ item.name }}
+          {{ item.user.name }}
           <v-chip
-            v-if="item.email === currentUserEmail"
+            v-if="item.user.email === currentUserEmail"
             size="x-small"
             color="secondary"
             class="ml-2"
@@ -145,11 +141,13 @@ function hhmm(d: Date) {
 
         <template #append>
           <v-chip
-            :color="item.email === currentUserEmail ? 'secondary' : 'primary'"
+            :color="
+              item.user.email === currentUserEmail ? 'secondary' : 'primary'
+            "
             variant="flat"
             class="font-weight-medium"
           >
-            #{{ item.position }}
+            #{{ index }}
           </v-chip>
         </template>
       </v-list-item>
@@ -158,7 +156,7 @@ function hhmm(d: Date) {
     <v-divider class="mt-2" />
 
     <div class="d-flex justify-end pa-4">
-      <v-btn variant="text" color="primary">Refresh</v-btn>
+      <v-btn variant="text" color="primary" @click="fetchQueue">Refresh</v-btn>
     </div>
   </v-card>
 </template>
