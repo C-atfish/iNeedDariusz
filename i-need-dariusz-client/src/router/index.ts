@@ -5,28 +5,38 @@
  */
 import { createRouter, createWebHistory } from "vue-router";
 import { routes } from "vue-router/auto-routes";
-import { useAuth } from "@/stores/auth"; // ⟵ add this
+import { useAuthStore } from "@/stores/auth";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes,
 });
 
-const auth = useAuth();
 router.beforeEach(async (to) => {
-  if (!auth.ready.value) await auth.fetchMe();
+  const auth = useAuthStore();
+
+  // Try to load user once
+  if (!auth.ready) {
+    await auth.fetchMe();
+  }
 
   const isLogin = to.path.toLowerCase() === "/login";
-  const isPublic = Boolean(to.meta?.public) || isLogin;
-  const isAuthed = Boolean(auth.user.value);
+  const requiresAuth = to.meta?.requiresAuth === true;
+  const isAuthed = !!auth.user;
 
-  if (!isPublic && !isAuthed) {
+  // Only block routes that explicitly require auth
+  if (requiresAuth && !isAuthed) {
     return { path: "/login", query: { next: to.fullPath || "/" } };
   }
+
+  // If user is already logged in, keep them away from /login
   if (isLogin && isAuthed) {
-    return { path: "/" };
+    return { path: (to.query.next as string) || "/" };
   }
+
+  // otherwise allow navigation
 });
+
 // Workaround for https://github.com/vitejs/vite/issues/11804
 router.onError((err, to) => {
   if (err?.message?.includes?.("Failed to fetch dynamically imported module")) {

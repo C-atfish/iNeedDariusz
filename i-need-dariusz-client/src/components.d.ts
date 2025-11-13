@@ -11,10 +11,13 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    AdminQueue: typeof import('./components/AdminQueue.vue')['default']
     AdminView: typeof import('./components/AdminView.vue')['default']
     HelloWorld: typeof import('./components/HelloWorld.vue')['default']
+    Queue: typeof import('./components/UserQueue.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    UserQueue: typeof import('./components/UserQueue.vue')['default']
     UserView: typeof import('./components/UserView.vue')['default']
   }
 }

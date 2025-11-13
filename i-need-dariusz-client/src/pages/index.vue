@@ -1,50 +1,30 @@
+<!-- src/pages/index.vue -->
 <template>
   <v-app>
-    <!-- Header -->
-    <v-app-bar app color="primary" dark>
-      <v-toolbar-title class="font-weight-medium">
-        I need Dariusz
-      </v-toolbar-title>
-
-      <v-spacer />
-
-      <!-- Show user info once loaded -->
-      <template v-if="user">
-        <v-menu offset-y>
-          <template #activator="{ props }">
-            <v-btn
-              v-bind="props"
-              variant="text"
-              class="d-flex align-center text-none"
-            >
-              <v-avatar size="36" class="mr-2">
-                <v-img :src="user.picture" alt="avatar" />
-              </v-avatar>
-              <span class="text-truncate">{{ user.name }}</span>
-            </v-btn>
-          </template>
-
-          <v-list>
-            <v-list-item>
-              <v-list-item-title class="font-weight-medium">{{
-                user.name
-              }}</v-list-item-title>
-              <v-list-item-subtitle>{{ user.email }}</v-list-item-subtitle>
-            </v-list-item>
-            <v-divider />
-            <v-list-item @click="doLogout">
-              <v-list-item-title>Log out</v-list-item-title>
-            </v-list-item>
-          </v-list>
-        </v-menu>
-      </template>
-    </v-app-bar>
-
-    <!-- Main content -->
     <v-main>
-      <v-container class="py-8">
-        <AdminView v-if="user?.email === 'jonarlarsgard@gmail.com'" />
-        <UserView v-else />
+      <v-container
+        class="fill-height d-flex flex-column align-center justify-center text-center"
+      >
+        <h1 class="text-h3 mb-4">Do you need Dariusz? Dont we all?</h1>
+
+        <p class="text-body-1 mb-8">
+          Sign in to save your queue history, or continue as a guest.
+        </p>
+
+        <div class="d-flex flex-column flex-sm-row ga-4">
+          <v-btn
+            color="primary"
+            size="large"
+            class="mb-4 mb-sm-0"
+            @click="signInWithGoogle"
+          >
+            Sign in with Google
+          </v-btn>
+
+          <v-btn variant="outlined" size="large" @click="continueAsGuest">
+            Continue as guest
+          </v-btn>
+        </div>
       </v-container>
     </v-main>
   </v-app>
@@ -52,19 +32,33 @@
 
 <script setup lang="ts">
 import { onMounted } from "vue";
-import { useAuth } from "@/stores/auth";
+import { useRouter, useRoute } from "vue-router";
+import { useAuthStore } from "@/stores/auth";
 
-import AdminView from "@/components/AdminView.vue";
-import UserView from "@/components/UserView.vue";
+const router = useRouter();
+const route = useRoute();
+const authStore = useAuthStore();
 
-const { user, ready, fetchMe, logout } = useAuth();
-
+// If already logged in, don't show landing – go straight to app
 onMounted(async () => {
-  if (!ready.value) await fetchMe();
+  if (!authStore.ready) {
+    await authStore.fetchMe();
+  }
+  if (authStore.user) {
+    router.replace("/app");
+  }
 });
 
-async function doLogout() {
-  await logout();
-  location.href = "/login";
+const GOOGLE_LOGIN_URL = `${import.meta.env.VITE_API_BASE}/api/auth/google`;
+
+function signInWithGoogle() {
+  const next = (route.query.next as string) || "/app";
+  const url = `${GOOGLE_LOGIN_URL}?next=${encodeURIComponent(next)}`;
+  window.location.href = url;
+}
+
+function continueAsGuest() {
+  const next = (route.query.next as string) || "/app";
+  router.push(next);
 }
 </script>

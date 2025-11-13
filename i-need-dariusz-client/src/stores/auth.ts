@@ -1,4 +1,4 @@
-import { ref } from "vue";
+import { defineStore } from "pinia";
 import { apiFetch } from "@/api";
 
 type User = {
@@ -8,31 +8,41 @@ type User = {
   picture?: string;
 };
 
-const user = ref<User | null>(null);
-const ready = ref(false);
-let fetching: Promise<void> | null = null;
+export const useAuthStore = defineStore("auth", {
+  state: () => ({
+    user: null as User | null,
+    ready: false,
+    fetching: null as Promise<void> | null,
+  }),
 
-async function fetchMe() {
-  if (fetching) return fetching;
-  fetching = (async () => {
-    try {
-      const data = await apiFetch<{ ok: boolean; user?: User }>("/api/auth/me");
-      user.value = data.user || null;
-    } catch {
-      user.value = null;
-    } finally {
-      ready.value = true;
-      fetching = null;
-    }
-  })();
-  return fetching;
-}
+  getters: {
+    isLoggedIn: (state) => !!state.user,
+  },
 
-async function logout() {
-  await apiFetch("/api/auth/logout", { method: "POST" });
-  user.value = null;
-}
+  actions: {
+    async fetchMe() {
+      if (this.fetching) return this.fetching;
 
-export function useAuth() {
-  return { user, ready, fetchMe, logout };
-}
+      this.fetching = (async () => {
+        try {
+          const data = await apiFetch<{ ok: boolean; user?: User }>(
+            "/api/auth/me"
+          );
+          this.user = data.user ?? null;
+        } catch {
+          this.user = null;
+        } finally {
+          this.ready = true;
+          this.fetching = null;
+        }
+      })();
+
+      return this.fetching;
+    },
+
+    async logout() {
+      await apiFetch("/api/auth/logout", { method: "POST" });
+      this.user = null;
+    },
+  },
+});
