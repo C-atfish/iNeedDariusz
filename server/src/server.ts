@@ -6,6 +6,7 @@ import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import type { Profile } from "passport-google-oauth20";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
+import { UserDB } from "./db/User";
 
 dotenv.config();
 
@@ -131,7 +132,13 @@ app.post("/api/auth/logout", (req, res) => {
 });
 
 // Optional: quick check
-app.get("/api/health", (_req, res) => res.json({ ok: true }));
+app.get("/api/health", async (req, res) => {
+  console.log("yoo");
+  const user = await UserDB.getUser(1);
+  console.log(user);
+
+  res.json({ ok: true });
+});
 
 app.listen(Number(PORT), () => {
   console.log(`API on http://localhost:${PORT}`);

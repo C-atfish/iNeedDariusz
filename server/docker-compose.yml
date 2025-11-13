@@ -1,15 +1,18 @@
 version: "3.1"
-name: i-need-dariusz
+name: "5-min-dariusz"
 services:
-  backend:
-    container_name: "ineed-backend"
-    build: .
-    env_file:
-      - .env
+  5-min-dariusz-db:
+    container_name: "5-min-dariusz-db"
+    image: postgres:16-alpine
     ports:
-      - "4512:3001"
-  frontend:
-    container_name: "ineed-frontend"
-    build: ../i-need-dariusz-client
-    ports:
-      - "4561:80"
+      - "5439:5432"
+    environment:
+      - POSTGRES_DB=${PGDATABASE}
+      - POSTGRES_USER=${PGUSER}
+      - POSTGRES_PASSWORD=${PGPASSWORD}
+    volumes:
+      - 5-min-dariusz-db-data:/var/lib/postgresql/data
+
+volumes:
+  5-min-dariusz-db-data:
+    driver: local
