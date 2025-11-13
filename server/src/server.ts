@@ -35,33 +35,31 @@ app.use(
 );
 app.use(passport.initialize());
 
-// Minimal "user store" (replace with DB later if you want)
 type User = { id: string; email?: string; name?: string; picture?: string };
 const users = new Map<string, User>();
-
-// Passport Google strategy
-console.log("USING");
-console.log(GOOGLE_CLIENT_ID);
 
 passport.use(
   new GoogleStrategy(
     {
       clientID: GOOGLE_CLIENT_ID,
       clientSecret: GOOGLE_CLIENT_SECRET,
-      callbackURL: `${BASE_URL}/api/auth/google/callback`, // NOTE: BASE_URL points to backend base (/api in prod)
+      callbackURL: `${BASE_URL}/api/auth/google/callback`,
     },
     async (_accessToken, _refreshToken, profile: Profile, done) => {
       try {
         const id = profile.id;
-        let user: any = users.get(id);
+        let user: any = await UserDB.getUser(id);
         if (!user) {
-          user = {
-            id,
-            email: profile.emails?.[0]?.value,
-            name: profile.displayName,
-            picture: profile.photos?.[0]?.value,
-          };
-          users.set(id, user);
+          if (!profile.emails?.[0]?.value) {
+            console.log("NO EMAIL, save failed");
+
+            return;
+          }
+          user = UserDB.saveUser(
+            profile.displayName,
+            profile.emails?.[0]?.value,
+            id
+          );
         }
         return done(null, user);
       } catch (err) {
@@ -71,7 +69,6 @@ passport.use(
   )
 );
 
-// Helpers
 function signToken(user: User) {
   const days = Number(JWT_EXPIRES_DAYS);
   return jwt.sign(
@@ -81,7 +78,6 @@ function signToken(user: User) {
   );
 }
 
-// Routes
 app.get(
   "/api/auth/google",
   passport.authenticate("google", {
@@ -129,15 +125,6 @@ app.get("/api/auth/me", (req, res) => {
 app.post("/api/auth/logout", (req, res) => {
   res.clearCookie(JWT_COOKIE_NAME, { path: "/" });
   res.status(204).end();
-});
-
-// Optional: quick check
-app.get("/api/health", async (req, res) => {
-  console.log("yoo");
-  const user = await UserDB.getUser(1);
-  console.log(user);
-
-  res.json({ ok: true });
 });
 
 app.listen(Number(PORT), () => {
