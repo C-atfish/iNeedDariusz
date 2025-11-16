@@ -4,7 +4,7 @@ export const useUserStore = defineStore("user", {
   state: () => ({
     id: "" as string,
     name: "" as string,
-    email: "" as string | null,
+    email: "" as string,
     isAdmin: false as boolean,
   }),
 

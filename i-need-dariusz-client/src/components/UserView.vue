@@ -2,6 +2,7 @@
 import { computed, onMounted, onBeforeUnmount, ref, reactive } from "vue";
 
 import UserQueue from "./UserQueue.vue";
+import QueueForm from "./QueueForm.vue";
 </script>
 
 <template>
@@ -9,10 +10,6 @@ import UserQueue from "./UserQueue.vue";
     <v-toolbar color="primary" density="comfortable" class="rounded-t-xl" dark>
       <v-toolbar-title class="font-weight-medium">Queue</v-toolbar-title>
       <v-spacer />
-
-      <v-btn variant="tonal" color="white" class="text-primary" disabled>
-        Join queue
-      </v-btn>
     </v-toolbar>
 
     <v-divider />
@@ -44,6 +41,8 @@ import UserQueue from "./UserQueue.vue";
       </div>
     </v-alert> -->
 
+    <v-divider class="mt-2" />
+    <QueueForm />
     <v-divider class="mt-2" />
 
     <div class="d-flex justify-end pa-4">

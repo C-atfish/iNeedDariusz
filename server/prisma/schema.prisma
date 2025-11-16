@@ -24,7 +24,7 @@ model User {
   name String
   email String @unique
   queue QueueItem[]
-  external_id String @unique
+  external_id String 
 }
 
 model QueueItem {

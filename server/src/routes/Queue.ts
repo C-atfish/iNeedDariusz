@@ -16,10 +16,14 @@ QueueRouter.post("/new", async (req, res) => {
 
   console.log(body);
 
-  if (!body || !body.id) {
-    return res.status(400).json({ ok: false, error: "Missing id" });
+  if (!body) {
+    return res.status(400).json({ ok: false, error: "Missing form data" });
   }
-  const item = await QueueItemDB.createNewQueueItem(body.id);
+  if (!body.name || !body.email) {
+    return res.status(400).json({ ok: false, error: "Missing name or email" });
+  }
+
+  const item = await QueueItemDB.createNewQueueItem(body.email, body.name);
 
   return res.json({ ok: true, item });
 });

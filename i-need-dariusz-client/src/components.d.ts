@@ -15,6 +15,7 @@ declare module 'vue' {
     AdminView: typeof import('./components/AdminView.vue')['default']
     HelloWorld: typeof import('./components/HelloWorld.vue')['default']
     Queue: typeof import('./components/UserQueue.vue')['default']
+    QueueForm: typeof import('./components/QueueForm.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     UserQueue: typeof import('./components/UserQueue.vue')['default']
