@@ -12,7 +12,13 @@ services:
       - POSTGRES_PASSWORD=${PGPASSWORD}
     volumes:
       - 5-min-dariusz-db-data:/var/lib/postgresql/data
-
+  backend:
+    build: .
+    ports:
+      - "5438:3001"
+    env_file:
+      - .env
+    restart: unless-stopped
 volumes:
   5-min-dariusz-db-data:
     driver: local

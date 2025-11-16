@@ -1,10 +1,11 @@
 import { prisma } from "./prisma";
 
 export const UserDB = {
-  async getUser(id: string) {
-    return await prisma.user.findUnique({
+  async getUser(id: string, email: string) {
+    return await prisma.user.findFirst({
       where: {
         external_id: id,
+        email: email,
       },
     });
   },

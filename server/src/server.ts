@@ -51,7 +51,10 @@ passport.use(
     async (_accessToken, _refreshToken, profile: Profile, done) => {
       try {
         const id = profile.id;
-        let user: any = await UserDB.getUser(id);
+        let user: any = await UserDB.getUser(
+          id,
+          profile.emails?.[0]?.value || ""
+        );
         if (!user) {
           if (!profile.emails?.[0]?.value) {
             console.log("NO EMAIL, save failed");
