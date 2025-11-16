@@ -45,7 +45,12 @@
     <!-- Main content -->
     <v-main>
       <v-container class="py-8">
-        <AdminView v-if="authStore.user?.email === 'jonarlarsgard@gmail.com'" />
+        <AdminView
+          v-if="
+            authStore.user?.email === 'jonarlarsgard@gmail.com' ||
+            authStore.user?.email === 'dariuszksiazek1@gmail.com'
+          "
+        />
         <UserView v-else />
       </v-container>
     </v-main>

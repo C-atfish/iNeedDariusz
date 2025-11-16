@@ -21,14 +21,11 @@
     WORKDIR /usr/share/nginx/html
     
     # Remove default nginx static contents
-    RUN rm -rf ./*
     
     # Copy built assets from builder
     COPY --from=builder /app/dist ./
-    
-    # Optional: custom nginx config for SPA routing
-    # (uncomment if you add nginx.conf in your frontend folder)
-    # COPY nginx.conf /etc/nginx/conf.d/default.conf
+    COPY nginx.conf /etc/nginx/nginx.conf
+
     
     EXPOSE 80
     
