@@ -290,7 +290,7 @@ function hhmm(d: Date) {
         color="success"
         variant="flat"
       >
-        {{ it.name }}
+        {{ it.user.name }}
       </v-chip>
       <div v-if="!doneItems.length" class="text-medium-emphasis text-body-2">
         No completed items yet.

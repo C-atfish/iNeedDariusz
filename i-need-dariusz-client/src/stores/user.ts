@@ -27,7 +27,7 @@ export const useUserStore = defineStore("user", {
     logout() {
       this.id = "";
       this.name = "";
-      this.email = null;
+      this.email = "";
       this.isAdmin = false;
     },
   },

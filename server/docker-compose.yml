@@ -19,6 +19,13 @@ services:
     env_file:
       - .env
     restart: unless-stopped
+  frontend:
+    build: ../i-need-dariusz-client
+    ports:
+      - "5437:80"
+    depends_on:
+      - backend
+
 volumes:
   5-min-dariusz-db-data:
     driver: local
