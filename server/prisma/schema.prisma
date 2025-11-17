@@ -32,5 +32,6 @@ model QueueItem {
   user User @relation(fields: [userId], references: [id])
   userId Int
   queuedAt DateTime @default(now())
+  startedAt DateTime? @default(now())
   status QueueItemStatus @default(queued)
 }

@@ -17,7 +17,7 @@ onBeforeUnmount(() => {
 });
 
 const activeItems = computed(() =>
-  queueStore.queue.filter((i) => i.status === "active")
+  queueStore.queue.filter((i) => i.status === "meeting")
 );
 const queuedItems = computed(() =>
   [...queueStore.queue]
@@ -27,7 +27,7 @@ const queuedItems = computed(() =>
 );
 const doneItems = computed(() =>
   queueStore.queue
-    .filter((i) => i.status === "done")
+    .filter((i) => i.status === "completed")
     .sort(
       (a, b) => (b.startedAt?.getTime() || 0) - (a.startedAt?.getTime() || 0)
     )
@@ -37,9 +37,10 @@ function startItem(id: string) {
   const it = queueStore.queue.find((i) => i.id === id && i.status === "queued");
   if (!it) return;
   const start = new Date();
-  it.status = "active";
+  it.status = "meeting";
   it.startedAt = start;
   it.endsAt = new Date(start.getTime() + FIVE_MIN);
+  queueStore.startQueueItem(id);
 }
 
 function startNext() {
@@ -48,7 +49,9 @@ function startNext() {
 }
 
 function cancelItem(id: string) {
-  const it = queueStore.queue.find((i) => i.id === id && i.status === "active");
+  const it = queueStore.queue.find(
+    (i) => i.id === id && i.status === "meeting"
+  );
   if (!it) return;
   it.status = "queued";
   it.startedAt = undefined;
@@ -56,14 +59,18 @@ function cancelItem(id: string) {
 }
 
 function completeItem(id: string) {
-  const it = queueStore.queue.find((i) => i.id === id && i.status === "active");
+  const it = queueStore.queue.find(
+    (i) => i.id === id && i.status === "meeting"
+  );
   if (!it) return;
-  it.status = "done";
+  it.status = "completed";
+  queueStore.finnishQueueItem(id);
 }
 
 function remainingMs(it: QueueItem) {
-  if (it.status !== "active" || !it.endsAt) return 0;
-  return Math.max(0, it.endsAt.getTime() - now.value);
+  if (it.status !== "meeting" || !it.startedAt) return 0;
+  const end = it.startedAt.getTime() + FIVE_MIN;
+  return Math.max(0, end - now.value);
 }
 
 function formatMMSS(ms: number) {
@@ -78,7 +85,7 @@ function formatMMSS(ms: number) {
 }
 
 function progressPct(it: QueueItem) {
-  if (it.status !== "active" || !it.startedAt || !it.endsAt) return 0;
+  if (it.status !== "meeting" || !it.startedAt) return 0;
   const elapsed = now.value - it.startedAt.getTime();
   return Math.min(100, Math.max(0, (elapsed / FIVE_MIN) * 100));
 }

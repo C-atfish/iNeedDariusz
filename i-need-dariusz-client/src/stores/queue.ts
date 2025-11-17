@@ -38,5 +38,35 @@ export const useQueueStore = defineStore("queue", {
 
       return queueRes;
     },
+    async startQueueItem(id: string) {
+      const res = await fetch(
+        `${import.meta.env.VITE_API_BASE}/api/queue/update`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            id,
+            status: "meeting",
+          }),
+        }
+      );
+    },
+    async finnishQueueItem(id: string) {
+      const res = await fetch(
+        `${import.meta.env.VITE_API_BASE}/api/queue/update`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            id,
+            status: "completed",
+          }),
+        }
+      );
+    },
   },
 });

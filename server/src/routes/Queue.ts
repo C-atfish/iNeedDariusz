@@ -27,3 +27,21 @@ QueueRouter.post("/new", async (req, res) => {
 
   return res.json({ ok: true, item });
 });
+
+QueueRouter.put("/update", (req, res) => {
+  const body = req.body;
+  console.log("should update queue item with body");
+
+  console.log(body);
+
+  if (!body) {
+    return res.status(400).json({ ok: false, error: "Missing form data" });
+  }
+  if (!body.id) {
+    return res.status(400).json({ ok: false, error: "Missing id" });
+  }
+
+  const item = QueueItemDB.changeStatus(body.id, body.status);
+
+  return res.json({ ok: true, item });
+});

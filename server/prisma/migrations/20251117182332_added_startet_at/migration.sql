@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "QueueItem" ADD COLUMN     "startedAt" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP;

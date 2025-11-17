@@ -1,3 +1,4 @@
+import { QueueItemStatus } from "../../generated/prisma/enums";
 import { prisma } from "./prisma";
 import { UserDB } from "./User";
 
@@ -5,11 +6,14 @@ export const QueueItemDB = {
   async getWaitingQueue() {
     return await prisma.queueItem.findMany({
       where: {
-        status: "queued",
+        NOT: {
+          status: "deleted",
+        },
       },
       select: {
         id: true,
         queuedAt: true,
+        startedAt: true,
         user: {
           select: {
             name: true,
@@ -37,6 +41,18 @@ export const QueueItemDB = {
     return await prisma.queueItem.create({
       data: {
         userId,
+      },
+    });
+  },
+  async changeStatus(id: number, status: QueueItemStatus) {
+    const startedAt = new Date();
+    return await prisma.queueItem.update({
+      where: {
+        id,
+      },
+      data: {
+        status,
+        startedAt: status === "meeting" ? startedAt : undefined,
       },
     });
   },
