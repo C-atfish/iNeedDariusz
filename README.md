@@ -8,6 +8,14 @@
 
 ![Demo of the app](https://media1.tenor.com/m/9CJaHEmyKPAAAAAC/chris-pratt-andy-dwyer.gif)
 
+## Just want to test it?
+
+1. cd /server
+2. docker compose up -d
+3. frontend available at 127.0.0.1:5437
+
+## Development steps
+
 ### How to set up database
 
 1. cd /server
