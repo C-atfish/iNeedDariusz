@@ -34,3 +34,7 @@
 1. cd /i-need-dariusz-client
 2. npm install
 3. npm run dev
+
+## Deploy changes to db in prod
+
+docker compose exec backend npx prisma migrate deploy
