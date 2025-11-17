@@ -16,6 +16,7 @@ export const QueueItemDB = {
             email: true,
           },
         },
+        status: true,
       },
     });
   },

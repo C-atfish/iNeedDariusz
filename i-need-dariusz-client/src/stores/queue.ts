@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 
-type QueueItem = {
+export type QueueItem = {
   id: string;
   user: {
     name: string;

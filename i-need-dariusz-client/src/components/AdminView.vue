@@ -1,62 +1,12 @@
 <script setup lang="ts">
+import { useQueueStore, type QueueItem } from "@/stores/queue";
 import { computed, onBeforeUnmount, onMounted, reactive, ref } from "vue";
 
-type Status = "queued" | "active" | "done";
-type QueueItem = {
-  id: string;
-  user: {
-    name: string;
-    email: string;
-  };
-  queuedAt: Date;
-  status: Status;
-  startedAt?: Date;
-  endsAt?: Date;
-};
+const queueStore = useQueueStore();
 
 const FIVE_MIN = 5 * 60 * 1000;
 const now = ref(Date.now());
 let timer: number | undefined;
-
-// --- Mock data (replace with backend later)
-const items = reactive<QueueItem[]>([
-  {
-    id: "u1",
-    user: {
-      name: "Dariusz K.",
-      email: "dariusz@example.com",
-    },
-    queuedAt: new Date(Date.now() - 11 * 60_000),
-    status: "queued",
-  },
-  {
-    id: "u2",
-    user: {
-      name: "Maya S.",
-      email: "maya@example.com",
-    },
-    queuedAt: new Date(Date.now() - 8 * 60_000),
-    status: "queued",
-  },
-  {
-    id: "u3",
-    user: {
-      name: "Jonar L.",
-      email: "jonar@example.com",
-    },
-    queuedAt: new Date(Date.now() - 4 * 60_000),
-    status: "queued",
-  },
-  {
-    id: "u4",
-    user: {
-      name: "Alex R.",
-      email: "alex@example.com",
-    },
-    queuedAt: new Date(Date.now() - 2 * 60_000),
-    status: "queued",
-  },
-]);
 
 // Tick every second for live countdowns
 onMounted(() => {
@@ -66,25 +16,25 @@ onBeforeUnmount(() => {
   if (timer) clearInterval(timer);
 });
 
-// Derived groups
-const activeItems = computed(() => items.filter((i) => i.status === "active"));
+const activeItems = computed(() =>
+  queueStore.queue.filter((i) => i.status === "active")
+);
 const queuedItems = computed(() =>
-  [...items]
+  [...queueStore.queue]
     .filter((i) => i.status === "queued")
     .sort((a, b) => a.queuedAt.getTime() - b.queuedAt.getTime())
     .map((item, idx) => ({ ...item, position: idx + 1 }))
 );
 const doneItems = computed(() =>
-  items
+  queueStore.queue
     .filter((i) => i.status === "done")
     .sort(
       (a, b) => (b.startedAt?.getTime() || 0) - (a.startedAt?.getTime() || 0)
     )
 );
 
-// Actions
 function startItem(id: string) {
-  const it = items.find((i) => i.id === id && i.status === "queued");
+  const it = queueStore.queue.find((i) => i.id === id && i.status === "queued");
   if (!it) return;
   const start = new Date();
   it.status = "active";
@@ -98,7 +48,7 @@ function startNext() {
 }
 
 function cancelItem(id: string) {
-  const it = items.find((i) => i.id === id && i.status === "active");
+  const it = queueStore.queue.find((i) => i.id === id && i.status === "active");
   if (!it) return;
   it.status = "queued";
   it.startedAt = undefined;
@@ -106,7 +56,7 @@ function cancelItem(id: string) {
 }
 
 function completeItem(id: string) {
-  const it = items.find((i) => i.id === id && i.status === "active");
+  const it = queueStore.queue.find((i) => i.id === id && i.status === "active");
   if (!it) return;
   it.status = "done";
 }
@@ -138,6 +88,10 @@ function hhmm(d: Date) {
   const m = d.getMinutes().toString().padStart(2, "0");
   return `${h}:${m}`;
 }
+
+onMounted(() => {
+  queueStore.fetchQueue();
+});
 </script>
 
 <template>
