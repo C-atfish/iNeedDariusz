@@ -23,6 +23,6 @@
 
 ### How to run the client
 
-1. cd /client
+1. cd /i-need-dariusz-client
 2. npm install
 3. npm run dev
