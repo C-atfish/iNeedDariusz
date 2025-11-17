@@ -1,24 +1,8 @@
 <script lang="ts" setup>
+import { useQueueStore } from "@/stores/queue";
 import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 
-type QueueItem = {
-  id: string;
-  user: {
-    name: string;
-    email: string;
-  };
-  queuedAt: Date;
-  status: string;
-  startedAt?: Date;
-  endsAt?: Date;
-};
-
-async function fetchQueue() {
-  const res = await fetch(`${import.meta.env.VITE_API_BASE}/api/queue/waiting`);
-  return res.json();
-}
-
-const queue = ref<QueueItem[]>([]);
+const queueStore = useQueueStore();
 
 const currentUserEmail = "you@example.com";
 
@@ -32,7 +16,7 @@ onBeforeUnmount(() => {
 });
 
 const myEntry = computed(
-  () => queue.value.find((q) => q.user.email === currentUserEmail) || null
+  () => queueStore.queue.find((q) => q.user.email === currentUserEmail) || null
 );
 
 function timeAgo(d: Date) {
@@ -52,24 +36,20 @@ function hhmm(d: Date) {
 }
 
 onMounted(async () => {
-  const raw = await fetchQueue();
-
-  queue.value = raw.map((item: any) => ({
-    ...item,
-
-    queuedAt: new Date(item.queuedAt),
-    startedAt: item.startedAt ? new Date(item.startedAt) : undefined,
-    endsAt: item.endsAt ? new Date(item.endsAt) : undefined,
-  }));
+  queueStore.fetchQueue();
 });
 </script>
 
 <template>
   <v-chip variant="elevated" color="white" text-color="primary" class="mr-2">
-    {{ queue.length }} in line
+    {{ queueStore.queue.length }} in line
   </v-chip>
   <v-list lines="two" class="py-0">
-    <v-list-item v-for="(item, index) in queue" :key="item.id" class="px-4">
+    <v-list-item
+      v-for="(item, index) in queueStore.queue"
+      :key="item.id"
+      class="px-4"
+    >
       <template #prepend>
         <v-avatar color="primary" class="elevation-1">
           <span class="text-white">{{
