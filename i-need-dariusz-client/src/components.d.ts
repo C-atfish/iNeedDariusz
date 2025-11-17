@@ -13,6 +13,7 @@ declare module 'vue' {
   export interface GlobalComponents {
     AdminQueue: typeof import('./components/AdminQueue.vue')['default']
     AdminView: typeof import('./components/AdminView.vue')['default']
+    Chat: typeof import('./components/Chat.vue')['default']
     HelloWorld: typeof import('./components/HelloWorld.vue')['default']
     Queue: typeof import('./components/UserQueue.vue')['default']
     QueueForm: typeof import('./components/QueueForm.vue')['default']

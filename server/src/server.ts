@@ -8,6 +8,8 @@ import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import { UserDB } from "./db/User";
 import { QueueRouter } from "./routes/Queue";
+import { createServer } from "http";
+import { Server } from "socket.io";
 
 dotenv.config();
 
@@ -133,7 +135,27 @@ app.post("/api/auth/logout", (req, res) => {
   res.status(204).end();
 });
 
-app.listen(Number(PORT), () => {
+const server = createServer(app);
+
+export const io = new Server(server, {
+  cors: {
+    origin: "*",
+  },
+});
+
+io.on("connection", async (socket: any) => {
+  console.log("Socket connected");
+
+  socket.on("chat:message", (msg: any) => {
+    socket.broadcast.emit("chat:message", msg);
+  });
+
+  socket.on("disconnect", () => {
+    console.log("Client disconnected", socket.id);
+  });
+});
+
+server.listen(Number(PORT), () => {
   console.log(`API on http://localhost:${PORT}`);
   console.log(`Google callback: ${BASE_URL}/api/auth/google/callback`);
 });

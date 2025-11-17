@@ -3,6 +3,7 @@ import { computed, onMounted, onBeforeUnmount, ref, reactive } from "vue";
 
 import UserQueue from "./UserQueue.vue";
 import QueueForm from "./QueueForm.vue";
+import Chat from "./Chat.vue";
 </script>
 
 <template>
@@ -45,8 +46,6 @@ import QueueForm from "./QueueForm.vue";
     <QueueForm />
     <v-divider class="mt-2" />
 
-    <div class="d-flex justify-end pa-4">
-      <v-btn variant="text" color="primary" disabled>Refresh</v-btn>
-    </div>
+    <Chat />
   </v-card>
 </template>
