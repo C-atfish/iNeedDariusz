@@ -35,3 +35,10 @@ model QueueItem {
   startedAt DateTime? @default(now())
   status QueueItemStatus @default(queued)
 }
+
+model ChatMessage {
+  id Int @id @default(autoincrement())
+  from String
+  text String
+  createdAt DateTime @default(now())
+}

@@ -56,6 +56,7 @@ const message = ref("");
 
 onMounted(() => {
   socketStore.connect();
+  socketStore.getMessages();
 });
 
 onBeforeUnmount(() => {

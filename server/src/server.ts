@@ -10,6 +10,8 @@ import { UserDB } from "./db/User";
 import { QueueRouter } from "./routes/Queue";
 import { createServer } from "http";
 import { Server } from "socket.io";
+import { ChatMessageDB } from "./db/ChatMessage";
+import { ChatRouter } from "./routes/Chat";
 
 dotenv.config();
 
@@ -39,6 +41,7 @@ app.use(
 app.use(passport.initialize());
 
 app.use("/api/queue", QueueRouter);
+app.use("/api/chat", ChatRouter);
 
 type User = { id: string; email?: string; name?: string; picture?: string };
 const users = new Map<string, User>();
@@ -146,7 +149,10 @@ export const io = new Server(server, {
 io.on("connection", async (socket: any) => {
   console.log("Socket connected");
 
-  socket.on("chat:message", (msg: any) => {
+  socket.on("chat:message", async (msg: any) => {
+    console.log("chat message");
+    console.log(msg);
+    await ChatMessageDB.saveMessage(msg.user, msg.text);
     socket.broadcast.emit("chat:message", msg);
   });
 

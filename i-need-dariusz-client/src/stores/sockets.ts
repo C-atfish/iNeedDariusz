@@ -44,7 +44,7 @@ export const useSocketStore = defineStore("socket", () => {
 
   function sendMessage(text: string, user?: string) {
     if (!socket) {
-      connect(); // optional auto-connect
+      connect();
     }
     if (!socket) return;
 
@@ -59,11 +59,21 @@ export const useSocketStore = defineStore("socket", () => {
     messages.value.push(msg);
   }
 
+  async function getMessages() {
+    const res = await fetch(
+      `${import.meta.env.VITE_API_BASE}/api/chat/messages`
+    );
+    const allMessages = await res.json();
+    messages.value = allMessages;
+    return allMessages;
+  }
+
   return {
     isConnected,
     messages,
     connect,
     disconnect,
     sendMessage,
+    getMessages,
   };
 });
