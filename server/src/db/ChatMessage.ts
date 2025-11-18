@@ -2,7 +2,7 @@ import { prisma } from "./prisma";
 
 export const ChatMessageDB = {
   async getMessages() {
-    return await prisma.chatMessage.findMany({
+    const messages = await prisma.chatMessage.findMany({
       orderBy: {
         createdAt: "desc",
       },
@@ -13,6 +13,13 @@ export const ChatMessageDB = {
         createdAt: true,
       },
     });
+    const serialized = messages.map((m) => ({
+      id: m.id,
+      user: m.from,
+      text: m.text,
+      createdAt: m.createdAt,
+    }));
+    return serialized;
   },
   async saveMessage(from: string, text: string) {
     return await prisma.chatMessage.create({

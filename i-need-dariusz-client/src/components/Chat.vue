@@ -16,7 +16,7 @@
       style="max-height: 250px; overflow-y: auto"
     >
       <div v-for="msg in socketStore.messages" :key="msg.id" class="mb-2">
-        <strong>{{ msg.user || "Anon" }}:</strong>
+        <strong>{{ msg.user || "Guest" }}:</strong>
         <span>{{ msg.text }}</span>
         <div class="text-caption text-disabled">
           {{ new Date(msg.createdAt).toLocaleTimeString() }}
@@ -47,10 +47,12 @@
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount } from "vue";
 import { useSocketStore } from "@/stores/sockets";
-import { useUserStore } from "@/stores/user";
+
+import { useAuthStore } from "@/stores/auth";
 
 const socketStore = useSocketStore();
-const userStore = useUserStore();
+
+const authStore = useAuthStore();
 
 const message = ref("");
 
@@ -66,7 +68,11 @@ onBeforeUnmount(() => {
 function handleSend() {
   const text = message.value.trim();
   if (!text) return;
-  socketStore.sendMessage(text, userStore.name ? userStore.name : "Guest");
+
+  socketStore.sendMessage(
+    text,
+    authStore.user?.name ? authStore.user?.name : "Guest"
+  );
   message.value = "";
 }
 </script>
