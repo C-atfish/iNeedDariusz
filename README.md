@@ -38,5 +38,3 @@
 ## Deploy changes to db in prod
 
 docker compose exec backend npx prisma migrate deploy
-
-test
