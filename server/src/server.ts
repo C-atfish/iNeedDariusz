@@ -44,7 +44,6 @@ app.use("/api/queue", QueueRouter);
 app.use("/api/chat", ChatRouter);
 
 type User = { id: string; email?: string; name?: string; picture?: string };
-const users = new Map<string, User>();
 
 passport.use(
   new GoogleStrategy(
@@ -107,12 +106,12 @@ app.get(
     const token = signToken(req.user as User);
     res.cookie(JWT_COOKIE_NAME, token, {
       httpOnly: true,
-      secure: isProd, // true on HTTPS
-      sameSite: isProd ? "none" : "lax", // if frontend/backend are same site in prod, Lax also ok
+      secure: isProd,
+      sameSite: isProd ? "none" : "lax",
       maxAge: Number(JWT_EXPIRES_DAYS) * 24 * 60 * 60 * 1000,
       path: "/",
     });
-    // Back to your frontend (optionally respect ?next=)
+
     const next = typeof req.query.next === "string" ? req.query.next : "/";
     res.redirect(`${FRONTEND_ORIGIN}${next}`);
   }
