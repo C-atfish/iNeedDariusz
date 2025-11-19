@@ -47,39 +47,31 @@ docker compose up -d
 1.
 
 ```
-   cd /server
+cd /server
 ```
 
 2.
 
 ```
-
 npm install
-
 ```
 
 3.
 
 ```
-
 npx prisma generate
-
 ```
 
 4.
 
 ```
-
 npx prisma db push
-
 ```
 
 5.
 
 ```
-
 npm run dev
-
 ```
 
 ### How to run the client
@@ -87,15 +79,13 @@ npm run dev
 1.
 
 ```
-
 cd /i-need-dariusz-client
-
 ```
 
 2.
 
-```npm install
-
+```
+npm install
 ```
 
 3.
