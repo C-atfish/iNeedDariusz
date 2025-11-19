@@ -10,7 +10,10 @@
 
 ## Just want to test it?
 
-1.
+1. clone the .env-example file and name it .env
+2. Fill it in with your own values, if you dont plan to use the google signin, you can just leave the client id and secret blank and continue as guest user.
+
+3.
 
 ```
 cd /server
