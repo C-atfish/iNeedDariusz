@@ -22,11 +22,7 @@ cd /server
 docker compose up -d
 ```
 
-3.
-
-```
-frontend available at 127.0.0.1:5437
-```
+3. Frontend available at 127.0.0.1:5437
 
 ## Development steps
 
@@ -48,30 +44,38 @@ docker compose up -d
 
 ### How to run the server
 
-1. ```
-   cd /server
-   ```
+1.
 
 ```
+   cd /server
+```
+
 2.
+
 ```
 
 npm install
 
 ```
+
 3.
+
 ```
 
 npx prisma generate
 
 ```
+
 4.
+
 ```
 
 npx prisma db push
 
 ```
+
 5.
+
 ```
 
 npm run dev
@@ -81,14 +85,18 @@ npm run dev
 ### How to run the client
 
 1.
+
 ```
 
 cd /i-need-dariusz-client
 
-````
+```
+
 2.
+
 ```npm install
-````
+
+```
 
 3.
 
